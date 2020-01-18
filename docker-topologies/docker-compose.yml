@@ -1,0 +1,36 @@
+version: '2'
+services:
+    mongodb:
+        image: bitnami/mongodb:4.1-debian-9
+        restart: always
+        environment:
+            - MONGODB_USERNAME=admin
+            - MONGODB_PASSWORD=admin
+            - MONGODB_DATABASE=shitAdvisor
+        ports:
+            - "27017:27017"
+    backend:
+        build:
+            context: ../docker-images/shitAdvisor-backend/
+        user: node
+        restart: always
+        volumes:
+            - ../docker-images/shitAdvisor-backend/:/usr/app
+        links:
+            - mongodb
+        ports:
+            - "8081:8081"
+        depends_on:
+            - mongodb
+    frontend:
+        build:
+            context: ../docker-images/shitadvisor-frontend/
+        user: node
+        restart: always
+        volumes:
+            - ../docker-images/shitadvisor-frontend/:/usr/app
+        links:
+            - backend
+        ports:
+            - "3000:3000"
+        
